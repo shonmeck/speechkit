@@ -1,7 +1,7 @@
 from collections.abc import Iterator
 from pathlib import Path
 import logging
-from models import Speech
+from speechkit.models import Speech
 
 logger = logging.getLogger(__name__)
 
