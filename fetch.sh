@@ -11,3 +11,7 @@ rm "./TXT/Session 47 - 1992/.DS_Store-to-UTF-8.txt"
 echo "Delete files: $(find ./TXT/ -type f -name '*.txt' | grep -v '[0-9]\{4\}\.txt$')"
 
 echo "Speech files: $(find ./TXT/ -type f -name '*.txt' | wc -l)"
+
+mkdir -p data/raw/
+mv ./TXT/* ./data/raw/
+rm -r TXT
