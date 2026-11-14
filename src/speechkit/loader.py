@@ -12,6 +12,7 @@ def load_speeches(folder: str) -> Iterator[Speech]:
             session = int(session)
             year = int(year)
             text = path.read_text(encoding="utf-8")
+            n_words = len(text.split())
         except (ValueError, UnicodeDecodeError, OSError) as err:
             logger.warning("Skipping %s: %s", path, err)
             continue
@@ -19,5 +20,6 @@ def load_speeches(folder: str) -> Iterator[Speech]:
             country=country,
             session=session,
             year=year,
-            text=text
+            text=text,
+            n_words=n_words
         )

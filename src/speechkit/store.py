@@ -10,6 +10,7 @@ def create_schema(con):
                 session INT,
                 year INT,
                 text TEXT,
+                n_words INT,
                 PRIMARY KEY (country, year)
             )
         """)
@@ -18,7 +19,7 @@ def insert_speeches(con: duckdb.DuckDBPyConnection, speeches: Iterable[Speech]):
     count = 0
     with con.appender("un_speeches", action="upsert") as appender:
         for s in speeches:
-            appender.append_row(s.country, s.session, s.year, s.text)
+            appender.append_row(s.country, s.session, s.year, s.text, s.n_words)
             count += 1
     return count
 
