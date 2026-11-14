@@ -2,8 +2,8 @@ import duckdb
 from collections.abc import Iterable
 from speechkit.models import Speech
 
-def create_schema():
-    with duckdb.connect("ungdcdb.duckdb") as con:
+def create_schema(con):
+    with duckdb.connect("data/ungdcdb.duckdb") as con:
         con.execute("""
             CREATE TABLE IF NOT EXISTS un_speeches (
                 country TEXT,
@@ -14,10 +14,13 @@ def create_schema():
             )
         """)
 
-def insert_speeches(speeches: Iterable[Speech]):
-    with duckdb.connect("ungdcdb.duckdb") as con:
-        with con.appender("un_speeches") as appender:
-            appender.append_rows((s.country, s.session, s.year, s.text) for s in speeches)
+def insert_speeches(con: duckdb.DuckDBPyConnection, speeches: Iterable[Speech]):
+    count = 0
+    with con.appender("un_speeches", action="upsert") as appender:
+        for s in speeches:
+            appender.append_row(s.country, s.session, s.year, s.text)
+            count += 1
+    return count
 
 def run_queries():
     return
