@@ -37,7 +37,7 @@ def get_stats(con: duckdb.DuckDBPyConnection,
     if by not in GROUPINGS:
         raise ValueError(f"by must be one of {sorted(GROUPINGS)}, not {by!r}")
     cols = GROUPINGS[by]
-    sql = f'SELECT {cols}, count(*) FROM un_speeches'
+    sql = f'SELECT {cols}, count(*), count(DISTINCT country), sum(n_words) FROM un_speeches'
     params = []
     if start is not None:
         sql += " WHERE year >= ?"
