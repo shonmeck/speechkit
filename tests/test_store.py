@@ -1,8 +1,7 @@
 import pytest
 
 from speechkit.models import Speech
-from speechkit.store import get_stats, insert_speeches
-
+from speechkit.store import insert_speeches, get_stats, get_search
 
 @pytest.fixture
 def speeches():
@@ -45,3 +44,9 @@ def test_filter(con, speeches):
 def test_raises_valueError(con):
     with pytest.raises(ValueError):
         get_stats(con, by="city")
+
+def test_get_search(con, speeches):
+    insert_speeches(con, speeches)
+    rows = get_search(con, term="two")
+    assert rows[0][2] == "One two three"
+
