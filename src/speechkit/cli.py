@@ -1,9 +1,13 @@
 import argparse
+import logging
 from pathlib import Path
+
 import duckdb
+
 from speechkit.config import DB_PATH
 from speechkit.loader import load_speeches
-from speechkit.store import create_schema, insert_speeches, GROUPINGS, get_stats
+from speechkit.store import GROUPINGS, create_schema, get_stats, insert_speeches
+
 
 def cmd_ingest(args):
     Path(args.db).parent.mkdir(parents=True, exist_ok=True)
@@ -12,14 +16,19 @@ def cmd_ingest(args):
         n = insert_speeches(con, load_speeches(args.folder))
         print(n, "speeches loaded")
 
+
 def cmd_stats(args):
     with duckdb.connect(args.db, read_only=True) as con:
-        rows = get_stats(con, by=args.by, start=args.start, end=args.end, country=args.country)
+        rows = get_stats(
+            con, by=args.by, start=args.start, end=args.end, country=args.country
+        )
         print(f"{args.by:<10}{'speeches':>10}{'countries':>10}{'words':>12}")
         for key, speeches, countries, words in rows:
             print(f"{key:<10}{speeches:>10}{countries:>10}{words:>12,}")
 
+
 def main():
+    logging.basicConfig(level=logging.INFO)
     parser = argparse.ArgumentParser(prog="speechkit")
     parser.add_argument("--db", default=DB_PATH, help="Path to the database file")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -37,6 +46,7 @@ def main():
 
     args = parser.parse_args()
     args.func(args)
+
 
 if __name__ == "__main__":
     main()
