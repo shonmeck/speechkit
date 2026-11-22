@@ -58,3 +58,38 @@ def get_stats(
         params.append(country)
     sql += f" GROUP BY {cols} ORDER BY {cols}"
     return con.execute(sql, params).fetchall()
+
+
+def get_search(
+        con: duckdb.DuckDBPyConnection,
+        term: str,
+        start: int | None = None,
+        end: int | None = None,
+        country: str | None = None,
+        limit: int | None = None
+        ) -> list[tuple[str, int, str]]:
+    sql = "SELECT country, year, text FROM un_speeches WHERE text ILIKE ?"
+    params = [f"%{term}%"]
+    if start is not None:
+        sql += " AND year >= ?"
+        params.append(start)
+    if end is not None:
+        sql += " AND year <= ?"
+        params.append(end)
+    if country is not None:
+        sql += " AND country = ?"
+        params.append(country)
+    sql += " ORDER BY country, year"
+    if limit is not None:
+        sql += " LIMIT ?"
+        params.append(limit)
+    return con.execute(sql, params).fetchall()
+
+def get_show(
+        con: duckdb.DuckDBPyConnection,
+        year: int | None = None,
+        country: str | None = None,
+        ) -> str:
+    sql = "SELECT text FROM un_speeches WHERE country = ? AND year = ?"
+    params = country, year
+    return con.execute(sql, params).fetchall()
